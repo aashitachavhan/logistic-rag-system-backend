@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+python-dotenv
+pydantic
+chromadb
+openai
+pypdf
+tiktoken
+google-generativeai
+google-genai
+python-multipart
