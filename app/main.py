@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from app.routes import upload, chat
+from app.routes import upload, chat, documents
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(title="Logistics RAG System")
@@ -15,6 +15,7 @@ app.add_middleware(
 
 app.include_router(upload.router)
 app.include_router(chat.router)
+app.include_router(documents.router)
 
 @app.get("/")
 def root():

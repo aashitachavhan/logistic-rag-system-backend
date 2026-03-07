@@ -9,3 +9,5 @@ tiktoken
 google-generativeai
 google-genai
 python-multipart
+pymongo
+sentence-transformers
