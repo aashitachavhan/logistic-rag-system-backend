@@ -56,7 +56,7 @@ async def upload_pdf(file: UploadFile = File(...)):
         
         # Process document for RAG pipeline
         chunks = chunk_text(text)
-        store_chunks(chunks)
+        store_chunks(chunks, file.filename)
         
         # Prepare response message
         if is_logistics:

@@ -14,10 +14,10 @@ def chat(request: ChatRequest):
     document chunks and generate comprehensive answers.
     
     Args:
-        request (ChatRequest): Contains the user's question.
+        request (ChatRequest): Contains the user's question and document filter.
     
     Returns:
         dict: Contains the generated answer.
     """
-    answer = generate_answer(request.question)
+    answer = generate_answer(request.question, request.document)
     return {"answer": answer}

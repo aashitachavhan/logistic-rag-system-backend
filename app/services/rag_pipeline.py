@@ -21,7 +21,7 @@ Example good responses:
 Always prioritize clarity and completeness in your responses."""
 
 
-def generate_answer(question):
+def generate_answer(question, document=None):
     """
     Generate an answer using RAG (Retrieval-Augmented Generation).
     
@@ -30,11 +30,12 @@ def generate_answer(question):
     
     Args:
         question (str): The user's question.
+        document (str, optional): The source document to filter by.
     
     Returns:
         str: The generated answer.
     """
-    context_chunks = query_chunks(question)
+    context_chunks = query_chunks(question, source_filter=document)
     context = "\n\n".join(context_chunks)
 
     prompt = f"""{SYSTEM_PROMPT}

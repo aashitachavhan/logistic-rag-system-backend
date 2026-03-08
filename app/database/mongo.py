@@ -70,8 +70,60 @@ def get_all_documents():
             return []
         
         documents = list(collection.find({}, {"_id": 0}))
-        logger.info(f"Retrieved {len(documents)} documents from MongoDB")
+        logger.info(f"Retrieved {len} documents from MongoDB")
         return documents
     except Exception as e:
         logger.error(f"Error retrieving documents: {e}")
         return []
+def delete_document_by_filename(filename: str) -> bool:
+    """
+    Delete a document from MongoDB by its filename.
+    
+    Args:
+        filename (str): The filename of the document to delete
+    
+    Returns:
+        bool: True if deletion was successful, False otherwise
+    """
+    try:
+        collection = get_documents_collection()
+        if collection is None:
+            logger.error("Documents collection not available")
+            return False
+        
+        result = collection.delete_one({"filename": filename})
+        if result.deleted_count > 0:
+            logger.info(f"Document deleted from MongoDB: {filename}")
+            return True
+        else:
+            logger.warning(f"Document not found in MongoDB: {filename}")
+            return False
+    except Exception as e:
+        logger.error(f"Error deleting document: {e}")
+        return False
+def delete_document_metadata(filename):
+    """
+    Delete document metadata from MongoDB by filename.
+    
+    Args:
+        filename (str): The filename of the document to delete.
+    
+    Returns:
+        bool: True if deletion was successful, False otherwise.
+    """
+    try:
+        collection = get_documents_collection()
+        if collection is None:
+            logger.error("Documents collection not available")
+            return False
+        
+        result = collection.delete_one({"filename": filename})
+        if result.deleted_count > 0:
+            logger.info(f"Document metadata deleted: {filename}")
+            return True
+        else:
+            logger.warning(f"No document found with filename: {filename}")
+            return False
+    except Exception as e:
+        logger.error(f"Error deleting document metadata: {e}")
+        return False

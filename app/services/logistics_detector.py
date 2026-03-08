@@ -5,33 +5,18 @@ Detects if a document is logistics-related by checking for logistics keywords.
 """
 
 LOGISTICS_KEYWORDS = {
-    "shipment",
+    "bill of lading",
     "consignee",
     "shipper",
+    "container number",
+    "port of discharge",
     "cargo",
-    "container",
-    "port",
-    "bill of lading",
-    "invoice",
-    "packing list",
+    "shipment",
+    "vessel",
     "freight",
-    "customs",
-    "delivery",
-    "logistics",
-    "transport",
-    "tracking",
-    "warehouse",
-    "distribution",
-    "origin",
-    "destination",
-    "receiver",
-    "sender",
-    "goods",
-    "package",
-    "shipment number",
-    "awb",
     "hs code",
-    "tariff",
+    "packing list",
+    "invoice"
 }
 
 
@@ -39,14 +24,13 @@ def detect_logistics_document(text: str) -> bool:
     """
     Detect if document contains logistics-related content.
     
-    Checks the provided text against a set of logistics keywords.
-    Returns True if at least one keyword is found.
+    Counts logistics keywords in the text. Returns True if at least 3 keywords are found.
     
     Args:
         text (str): The extracted text from the document.
     
     Returns:
-        bool: True if logistics keywords detected, False otherwise.
+        bool: True if at least 3 logistics keywords detected, False otherwise.
     """
     if not text:
         return False
@@ -54,12 +38,13 @@ def detect_logistics_document(text: str) -> bool:
     # Convert text to lowercase for case-insensitive matching
     text_lower = text.lower()
     
-    # Check if any logistics keyword appears in the text
+    # Count how many logistics keywords appear
+    keyword_count = 0
     for keyword in LOGISTICS_KEYWORDS:
         if keyword in text_lower:
-            return True
+            keyword_count += 1
     
-    return False
+    return keyword_count >= 3
 
 
 def extract_preview(text: str, max_chars: int = 500) -> str:

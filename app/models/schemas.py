@@ -27,3 +27,5 @@ class DocumentListResponse(BaseModel):
 class ChatRequest(BaseModel):
     """Schema for chat endpoint request."""
     question: str
+    document: Optional[str] = None
+    document: str
