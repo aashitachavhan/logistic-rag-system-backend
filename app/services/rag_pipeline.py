@@ -33,9 +33,12 @@ def generate_answer(question, document=None):
         document (str, optional): The source document to filter by.
     
     Returns:
-        str: The generated answer.
+        dict: {"answer": str, "sources": list of {"document": str, "page": int}}
     """
-    context_chunks = query_chunks(question, source_filter=document)
+    results = query_chunks(question, source_filter=document)
+    context_chunks = results["documents"][0] if results["documents"] else []
+    metadatas = results["metadatas"][0] if results["metadatas"] else []
+    
     context = "\n\n".join(context_chunks)
 
     prompt = f"""{SYSTEM_PROMPT}
@@ -46,11 +49,20 @@ Context from documents:
 User Question:
 {question}
 
-Please provide a clear, complete answer based on the context above."""
+Please provide a clear, conversational answer based on the context above. End by offering help with other logistics topics."""
 
     response = client.models.generate_content(
         model="models/gemini-2.5-flash",
         contents=prompt
     )
 
-    return response.text
+    # Extract unique sources
+    sources = []
+    seen = set()
+    for meta in metadatas:
+        key = (meta["source"], meta["page"])
+        if key not in seen:
+            sources.append({"document": meta["source"], "page": meta["page"]})
+            seen.add(key)
+
+    return {"answer": response.text, "sources": sources}

@@ -1,8 +1,8 @@
 from fastapi import APIRouter, UploadFile, File
 from datetime import datetime
-from app.services.pdf_loader import extract_first_page_text_from_bytes, load_pdf_from_bytes
-from app.services.chunking import chunk_text
-from app.services.vector_store import store_chunks
+from app.services.pdf_loader import extract_first_page_text_from_bytes, load_pdf_pages_from_bytes
+from app.services.chunking import chunk_pages
+from app.services.vector_store import store_chunks_with_meta
 from app.services.logistics_detector import detect_logistics_document, extract_preview
 from app.database.mongo import store_document_metadata
 from app.models.schemas import DocumentResponse
@@ -40,10 +40,11 @@ async def upload_pdf(file: UploadFile = File(...)):
         is_logistics = detect_logistics_document(first_page_text)
         
         # Extract full text for chunking and embedding
-        text = await load_pdf_from_bytes(file_bytes)
+        pages = await load_pdf_pages_from_bytes(file_bytes)
         
         # Extract preview for metadata storage
-        preview = extract_preview(text)
+        full_text = " ".join([text for text, _ in pages])
+        preview = extract_preview(full_text)
         
         # Store document metadata in MongoDB
         document_metadata = {
@@ -55,8 +56,8 @@ async def upload_pdf(file: UploadFile = File(...)):
         store_document_metadata(document_metadata)
         
         # Process document for RAG pipeline
-        chunks = chunk_text(text)
-        store_chunks(chunks, file.filename)
+        chunks_with_meta = chunk_pages(pages)
+        store_chunks_with_meta(chunks_with_meta, file.filename)
         
         # Prepare response message
         if is_logistics:

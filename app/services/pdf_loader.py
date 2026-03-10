@@ -20,6 +20,25 @@ async def load_pdf_from_bytes(file_bytes):
             os.remove(tmp_path)
 
 
+async def load_pdf_pages_from_bytes(file_bytes):
+    """Extract text from each page of PDF bytes, returning list of (page_text, page_num)."""
+    with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as tmp:
+        tmp.write(file_bytes)
+        tmp.flush()
+        tmp_path = tmp.name
+    
+    try:
+        reader = PdfReader(tmp_path)
+        pages = []
+        for i, page in enumerate(reader.pages):
+            page_text = page.extract_text()
+            pages.append((page_text, i + 1))  # page_num starts from 1
+        return pages
+    finally:
+        if os.path.exists(tmp_path):
+            os.remove(tmp_path)
+
+
 async def extract_first_page_text_from_bytes(file_bytes):
     """Extract text from the first page of PDF bytes."""
     with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as tmp:
